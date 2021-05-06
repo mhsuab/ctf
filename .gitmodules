@@ -1,0 +1,3 @@
+[submodule "bluedojo-ctf"]
+	path = bluedojo-ctf
+	url = git@github.com:mhsuab/bluedojo-ctf.git
