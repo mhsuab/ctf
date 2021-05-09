@@ -1,3 +1,7 @@
+# ignore tmp file
+*tmp*
+*temp*
+
 # ignore binary
 *
 !*/
