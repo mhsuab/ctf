@@ -1,0 +1,25 @@
+# ignore tmp file
+*tmp*
+*temp*
+
+# ignore binary
+*
+!*/
+!*.*
+!.*
+*.exe
+*.dll
+
+# basic
+*.swp
+.DS_Store
+.gdb_history
+peda-session-*
+objdump
+.vscode
+node_modules
+
+# python related
+*.pyc
+__pycache__
+*.sage.py
