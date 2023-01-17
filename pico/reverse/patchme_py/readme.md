@@ -24,3 +24,17 @@
     - program ask for password and pass the check for correct password
 2. However, the `user_pw` does not affect the decryption.
 3. Remove the check for password and run it directly to get the *flag*
+    ```diff
+    def level_1_pw_check():
+        user_pw = input("Please enter correct password for flag: ")
+    -   if( user_pw == "ak98" + \
+    -               "-=90" + \
+    -               "adfjhgj321" + \
+    -               "sleuth9000"):
+    +   if True:
+            print("Welcome back... your flag, user:")
+            decryption = str_xor(flag_enc.decode(), "utilitarian")
+            print(decryption)
+            return
+        print("That password is incorrect")
+    ```

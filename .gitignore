@@ -2,14 +2,6 @@
 *tmp*
 *temp*
 
-# ignore binary
-*
-!*/
-!*.*
-!.*
-*.exe
-*.dll
-
 # basic
 *.swp
 .DS_Store

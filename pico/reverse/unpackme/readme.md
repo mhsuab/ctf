@@ -6,7 +6,7 @@
 > Can you get the flag?
 
 ## Solution
-1. Use `Detect It Easy` to scan
+1. Use `Detect It Easy` to scan  
     ![](./detect_it_easy.png)
     - packed with `UPX`
 2. Download [UPX](https://github.com/upx/upx) and decompress the binary
