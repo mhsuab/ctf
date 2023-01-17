@@ -1,0 +1,3 @@
+[submodule "utils/cryfind"]
+	path = utils/cryfind
+	url = git@github.com:oalieno/cryfind.git

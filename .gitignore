@@ -16,6 +16,7 @@
 .gdb_history
 peda-session-*
 objdump
+*.dump
 .vscode
 node_modules
 
@@ -23,3 +24,7 @@ node_modules
 *.pyc
 __pycache__
 *.sage.py
+
+# Java realated
+*.java
+*.class
