@@ -5,6 +5,9 @@
 ## Description
 > Can you get the flag?
 
+## What It Does
+Ask for password and exit if the password not correct or print out the flag for user.
+
 ## Solution
 1. Inspect the python code
     - all the strings are obfuscated

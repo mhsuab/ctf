@@ -5,6 +5,9 @@
 ## Description
 > Can you get the flag?
 
+## What It Does
+Ask for a favorite number and return "Sorry, that's not it!" or flag based on the input number.
+
 ## Solution
 1. Use `Detect It Easy` to scan  
     ![](./detect_it_easy.png)

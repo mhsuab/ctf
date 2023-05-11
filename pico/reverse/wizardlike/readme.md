@@ -1,12 +1,14 @@
 # Wizardlike
 > Event: `picoCTF 2022`  
-> Challenge: [link](https://play.picoctf.org/challenges/318
-> /)
+> Challenge: [link](https://play.picoctf.org/challenges/318/)
 
 ## Description
 > Do you seek your destiny in these deplorable dungeons? If so, you may want to look elsewhere. Many have gone before you and honestly, they've cleared out the place of all monsters, ne'erdowells, bandits and every other sort of evil foe. The dungeons themselves have seen better days too. There's a lot of missing floors and key passages blocked off. You'd have to be a real wizard to make any progress in this sorry excuse for a dungeon!  
 > Download the game.  
 > 'w', 'a', 's', 'd' moves your character and 'Q' quits. You'll need to improvise some wizardly abilities to find the flag in this dungeon crawl. '.' is floor, '#' are walls, '<' are stairs up to previous level, and '>' are stairs down to next level.
+
+## What It Does
+Game with multiple levels of mazes that use 'w,a,s,d' to move around.
 
 ## Solution
 1. Run the program to test

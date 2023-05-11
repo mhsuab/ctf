@@ -5,6 +5,9 @@
 ## Description
 > Can you get the flag?
 
+## What It Does
+Ask for a favorite number and return "Sorry, that's not it!" or flag based on the input number.
+
 ## Solution
 1. Run `bbbbloat` to test the binary
     ```bash
@@ -66,7 +69,7 @@
     0x555555555579:      mov    rdi,rax
     0x55555555557c:      call   0x5555555550d0 <free@plt>
     0x555555555581:      jmp    0x55555555558f
-    0x555555555583:      lea    rdi,[rip+0xa99]                     ; STRING: Sorry, that's not it!
+    0x555555555583:      lea    rdi,[rip+0xa99]                     ; STRING: "Sorry, that's not it!"
     0x55555555558a:      call   0x5555555550f0 <puts@plt>
     0x55555555558f:      mov    eax,0x0
     0x555555555594:      mov    rdi,QWORD PTR [rbp-0x8]

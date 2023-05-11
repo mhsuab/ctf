@@ -8,6 +8,9 @@
 > Put the password you recover into the picoCTF flag format like:  
 > picoCTF{password}
 
+## What It Does
+Maximum 3 attempts to guess the correct password for the safe and verify it to see if the safe can be opened.
+
 ## Solution
 1. Inspect the java code
     - check the base64 encoded password and give flag if password matches

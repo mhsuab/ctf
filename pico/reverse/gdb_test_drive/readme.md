@@ -5,6 +5,9 @@
 ## Description
 > Can you get the flag?
 
+## What It Does
+Run the program and find it hang for a while.
+
 ## Solution
 1. Inspect the assembly
     ```c

@@ -1,3 +1,6 @@
 [submodule "utils/cryfind"]
 	path = utils/cryfind
 	url = git@github.com:oalieno/cryfind.git
+[submodule "la23/snek/pycdc"]
+	path = la23/snek/pycdc
+	url = git@github.com:zrax/pycdc.git

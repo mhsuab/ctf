@@ -5,6 +5,9 @@
 ## Description
 > Can you get the flag?
 
+## What It Does
+Ask for key and check the user input to print "Invalid key" or "Valid Key".
+
 ## Solution
 1. Inspect the java code
     - Compare each characters with hard coded character one by one

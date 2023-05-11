@@ -6,6 +6,9 @@
 > Can you get the flag?  
 > Run this Python program in the same directory as this encrypted flag.
 
+## What It Does
+Ask for the password and print flag if the password correct.
+
 ## Solution
 1. Inspect the python code
     ```python

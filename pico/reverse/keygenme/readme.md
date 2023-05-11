@@ -5,6 +5,9 @@
 ## Description
 > Can you get the flag?
 
+## What It Does
+Ask for a license key and check whether it is valid.
+
 ## Solution
 1. Inspect the assembly, `main` function
     ```as
