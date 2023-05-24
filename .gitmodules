@@ -4,3 +4,6 @@
 [submodule "la23/snek/pycdc"]
 	path = la23/snek/pycdc
 	url = git@github.com:zrax/pycdc.git
+[submodule "pwnable.xyz"]
+	path = pwnable.xyz
+	url = git@github.com:mhsuab/pwnable.xyz
