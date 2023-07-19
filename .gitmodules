@@ -7,3 +7,6 @@
 [submodule "pwnable.xyz"]
 	path = pwnable.xyz
 	url = git@github.com:mhsuab/pwnable.xyz
+[submodule "how2heap"]
+	path = how2heap
+	url = git@github.com:mhsuab/how2heap.git
