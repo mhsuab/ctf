@@ -1,0 +1,64 @@
+version: '3.1'
+
+services:
+  ctf-18:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: ubuntu:18.04
+    image: ctf:18
+    container_name: ctf-18
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+    ports:
+      - "50000:1346"
+    privileged: true
+    volumes:
+      - ${HOME}:/root/mhsuab
+    tty: true
+    networks:
+      - ctf
+  ctf-20:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: ubuntu:20.04
+    image: ctf:20
+    container_name: ctf-20
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+    ports:
+      - "50001:1346"
+    privileged: true
+    volumes:
+      - ${HOME}:/root/mhsuab
+    tty: true
+    networks:
+      - ctf
+  ctf-22:
+    build:
+      context: .
+      args:
+        BASE_IMAGE: ubuntu:22.04
+    image: ctf:22
+    container_name: ctf-22
+    security_opt:
+      - seccomp:unconfined
+    cap_add:
+      - SYS_PTRACE
+    ports:
+      - "50002:1346"
+    privileged: true
+    volumes:
+      - ${HOME}:/root/mhsuab
+    tty: true
+    networks:
+      - ctf
+
+networks:
+  ctf:
+    driver: bridge
