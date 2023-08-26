@@ -21,3 +21,16 @@ __pycache__
 *.class
 
 malwares/*
+
+# ghidra related
+*.rep
+*.gpr
+# binary ninja
+*.bndb
+# ida
+*.idb
+*.i64
+*.id0
+*.id1
+*.id2
+*.til
