@@ -250,12 +250,12 @@ If the player reaches the <u>bottom-right cell with `checker` equal to 1</u>, th
 
 ## Solution
 1. Dump the matrix after the random shuffle.
-    > `parse.py`
+    > [`parse.py`](./parse.py)
     - dump the memory for the matrix. (after the shuffle, `0x4abbf0`)
     - parse the dumped memory to get the matrix.
 2. Assume the checker becomes 1 at the end of the game is its maximum value.
     - Problem becomes a **Maximum Sum Path in Matrix** problem.
     - Dynamic Programming to find the maximum sum path.
-        > `solve.py`
+        > [`solve.py`](./solve.py)
         - Maximum Sum for the bottom-right cell **is 1**.
         - Therefore, the maximum sum path is the path from the top-left cell to the bottom-right cell to get the flag.
