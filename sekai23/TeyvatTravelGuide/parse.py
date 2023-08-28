@@ -1,8 +1,12 @@
 # gdb -q -x parse.py
 import gdb
 
+import sys
+sys.path.append('.')
+from const import *
+
 # run the program, genshin
-gdb.execute('file genshin')
+gdb.execute(f'file {binary_path}')
 
 # breakpoint before pow
 gdb.execute('b *0x4ABA89')
@@ -36,8 +40,7 @@ for x in range(size):
         cost[x, y] = int.from_bytes(inferior.read_memory(grid_values_address[y] + 8 * x, 8), byteorder='little', signed=True)
 
 # save the matrix values
-grids_file = 'cost.pkl'
-with open(grids_file, 'wb') as f:
+with open(filename, 'wb') as f:
     pickle.dump(cost, f)
 
 # quit gdb
