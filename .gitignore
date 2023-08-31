@@ -34,3 +34,5 @@ malwares/*
 *.id1
 *.id2
 *.til
+*.nam
+*.idc

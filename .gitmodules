@@ -10,3 +10,6 @@
 [submodule "how2heap"]
 	path = how2heap
 	url = git@github.com:mhsuab/how2heap.git
+[submodule "microcorruption"]
+	path = microcorruption
+	url = git@github.com:mhsuab/microcorruption.git
