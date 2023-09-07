@@ -1,0 +1,2 @@
+- launch `.apk` in **Android Studio**
+- press `HELLO, I AM A BUTTON` to get flag in shell

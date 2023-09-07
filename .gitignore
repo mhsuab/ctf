@@ -36,3 +36,6 @@ malwares/*
 *.til
 *.nam
 *.idc
+
+# temporary
+*.img

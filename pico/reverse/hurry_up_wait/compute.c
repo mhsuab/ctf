@@ -1,0 +1,31 @@
+char* sub_298A()
+{
+  ada__calendar__delays__delay_for(1000000000000000LL);
+  p();
+  i();
+  c();
+  o();
+  C();
+  T();
+  F();
+  left();
+  d();
+  one();
+  five();
+  a();
+  five();
+  m();
+  underline();
+  f();
+  t();
+  w();
+  underline();
+  d();
+  f();
+  b();
+  d();
+  c();
+  five();
+  d();
+  return right();
+}

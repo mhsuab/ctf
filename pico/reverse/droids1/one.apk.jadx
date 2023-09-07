@@ -1,0 +1,16 @@
+{
+  "projectVersion": 1,
+  "files": [
+    "one.apk"
+  ],
+  "treeExpansions": [],
+  "codeData": {
+    "comments": [],
+    "renames": []
+  },
+  "openTabs": [],
+  "activeTab": -1,
+  "cacheDir": "one.apk.cache",
+  "enableLiveReload": false,
+  "searchHistory": []
+}
