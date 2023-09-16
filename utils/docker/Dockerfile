@@ -32,6 +32,8 @@ RUN python3 -m pip install --upgrade pip
 RUN python3 -m pip install --upgrade pwntools
 RUN python3 -m pip install --no-cache-dir capstone ropgadget ipython smmap2 ropper unicorn pebble r2pipe pycryptodome
 RUN python3 -m pip install --no-cache-dir z3-solver angr cvc5
+## temporary line for pyelftools breaking pwntools
+RUN python3 -m pip install --no-cache-dir pyelftools==0.29
 RUN gem install one_gadget seccomp-tools
 
 # setup gdb

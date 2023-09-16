@@ -13,3 +13,6 @@
 [submodule "microcorruption"]
 	path = microcorruption
 	url = git@github.com:mhsuab/microcorruption.git
+[submodule "utils/biodiff"]
+	path = utils/biodiff
+	url = git@github.com:8051Enthusiast/biodiff.git
