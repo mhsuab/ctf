@@ -39,3 +39,7 @@ malwares/*
 
 # temporary
 *.img
+
+# obsidian
+.obsidian
+
