@@ -1,0 +1,54 @@
+DW_OP_const1u: 1; 
+DW_OP_breg5 (rdi): 0; a
+DW_OP_breg4 (rsi): 0; b
+DW_OP_and; a & b
+DW_OP_breg1 (rdx): 0; c
+DW_OP_and; a & b & c
+DW_OP_const8u: 7219272754963824708; 
+DW_OP_ne; 
+  DW_OP_bra: 3; 
+  DW_OP_const1u: 3; 
+  DW_OP_mul; 
+DW_OP_const8u: 9259542123273814144; 
+DW_OP_dup; 
+DW_OP_dup; 
+DW_OP_breg5 (rdi): 0; 
+DW_OP_and; 
+DW_OP_const1u: 0; 
+DW_OP_ne; 
+  DW_OP_bra: 26; 
+  DW_OP_breg4 (rsi): 0; 
+  DW_OP_and; 
+  DW_OP_bra: 9; 
+  DW_OP_breg1 (rdx): 0; 
+  DW_OP_and; 
+  DW_OP_bra: 3; 
+  DW_OP_const1u: 3; 
+  DW_OP_mul; 
+  DW_OP_breg5 (rdi): 0; 
+  DW_OP_dup; 
+  DW_OP_mul; 
+  DW_OP_breg4 (rsi): 0; 
+  DW_OP_dup; 
+  DW_OP_mul; 
+  DW_OP_plus; 
+  DW_OP_const8u: 18116903027530606121; 
+  DW_OP_ne; 
+  DW_OP_bra: 3; 
+  DW_OP_const1u: 3; 
+  DW_OP_mul; 
+  DW_OP_breg1 (rdx): 0; 
+  DW_OP_dup; 
+  DW_OP_mul; 
+  DW_OP_breg4 (rsi): 0; 
+  DW_OP_dup; 
+  DW_OP_mul; 
+  DW_OP_plus; 
+DW_OP_const8u: 16612709672999228116; 
+DW_OP_ne; 
+  DW_OP_bra: 3; 
+  DW_OP_const1u: 7; 
+  DW_OP_mul; 
+DW_OP_const1u: 189; 
+DW_OP_eq; 
+DW_OP_stack_value
