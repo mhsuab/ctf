@@ -47,6 +47,8 @@ def parse(raw: bytes, start_addr: int, to_match: int, funcs: List[FuncDefn], lut
         else:
             current.funcs.append((hex(start_addr + i), addr))
             i += 4
+    if current != funcs[-1]:
+        funcs.append(current)
 
 funcs = []
 lut = {}
