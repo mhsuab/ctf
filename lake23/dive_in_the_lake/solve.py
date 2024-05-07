@@ -2,7 +2,7 @@
 #
 # a = 0 # rdi
 # b = 0 # rsi
-# c = 0 #rdx
+# c = 0 # rdx
 #
 # val = 1
 # if (a & b & c == 7219272754963824708):
@@ -39,5 +39,5 @@ s.add((c * c + b * b) == 16612709672999228116)
 
 if s.check() == sat:
     model = s.model()
-    print (b''.join([model[i].as_long().to_bytes(8, 'little') for i in args]))
+    print (b''.join([model[i].as_long().to_bytes(8, 'little') for i in args]).decode())
 

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+<meta name="generator" content="md2html">
+</head>
+<body>
+<style>
+body {
+  margin: auto;
+  max-width: 50em;
+}
+</style>
+<h1>writeup for smolene's latest obsession</h1>
+<p>This is the writeup of a challenge from LakeCTF qualifications 2023.
+Writeup and challenge by @smolene.</p>
+<p>I will try to explain the vm and the chal. It is not necessary at all to understand everything to solve the chal, but hopefully you can find the vm as interesting as I do :)</p>
+<h2>1. Summary</h2>
+<p>The global plan of attack is as such:</p>
+<ul>
+<li>reverse the binary and understand that it implements an interpreter.</li>
+<li>read the chal description to understand that the remote has more input given to it before you</li>
+<li>write some code for the interpreter to leak the rest of the input only present on the remote (the &quot;prompt&quot;).</li>
+<li>reverse the &quot;prompt&quot;, notice that it implements a flag checker.</li>
+<li>solve the flagchecker.</li>
+<li>???</li>
+<li>profit</li>
+</ul>
+<p>The server runs (basically) this:</p>
+<pre><code>ncat -lk 8080 -c 'bash runchal.bash'
+# runchal.bash is just this:
+# cat prompt - | ./chal
+</code></pre>
+<h2>2. Introduction to Forth and indirect threaded code</h2>
+<p>The binary is some hand written x86 assembly (source in f.nasm) implementing a very simple Forth.
+The control flow may seem complex but it is built out of very simple parts:</p>
+<ul>
+<li>general stuff:<ul>
+<li>1 cell = 4 bytes</li>
+<li>stack counted in units of cells</li>
+<li>esp points to the data stack</li>
+<li>ebp points to the return stack</li>
+<li>it is a stack machine, operands are fetched from the stack and results written to it</li>
+</ul>
+</li>
+<li>indirect threaded code:<ul>
+<li>slightly unintuitive way of storing code, see next paragraphs</li>
+</ul>
+</li>
+<li>at the start of a primitive (nest_, unnest_, read_, etc):<ul>
+<li>esi points to the next instruction in the parent word</li>
+<li>eax points to the start of the current block</li>
+</ul>
+</li>
+</ul>
+<p>format of a header/block:
+index in cells (1 cell = 4 bytes)</p>
+<pre><code>0 pointer to next header
+1 name of word
+2 continued..
+3 continued.. (12B total, 0 padded)
+4 flags (0b1 = immediate, others unused)
+- - - - header ^^^
+- - - - block  vvv
+5 pointer to interpreter of current block
+6 data ...
+7 data ... etc
+8 ...
+</code></pre>
+<p>Every forth function (called a word) is stored as a block. Blocks are linked together in a linked list.
+Looking up a function is just walking the list until you arrive at a header with the name you are looking for.</p>
+<p>Every block has its own interpreter (cell 5), which is a pointer to native code, which will do things with the data following it.
+An interpreter may need no data, like most binary-operation words (like add, sub etc).
+Almost every interpreter will follow a convention that allows it to execute code by simply concatenating addresses of blocks.
+The macro <code>next</code> will take <code>esi</code> (= address of next block) and deref it and put the result in <code>eax</code>, then increment <code>esi</code> ; then, it jumps to <code>[eax]</code>.</p>
+<pre><code>block1:
+&amp;interp
+ptr = &amp;block2
+ptr = &amp;block3   &lt;-- esi points here at the start of executing [block2]
+ptr = etc..     &lt;-- esi points here at the end (incremented by esi)
+
+
+block2:
+&amp;interp          &lt;-- eax points here at the start of executing [block2]
+ptr
+ptr
+
+block3:
+&amp;interp
+ptr
+ptr
+</code></pre>
+<p>In assembly:</p>
+<pre><code>my_interp:
+;; esi is next pointer in caller block, eax is pointer to start of callee block
+... whatever assembly you want ...
+lodsd     ;; get next pointer in caller block
+jmp [eax] ;; jump interp of next block
+;; abbreviated as `next` in f.nasm
+</code></pre>
+<p>From here, we can write a special routine <code>nest_</code>, which is an interpreter that will allow writing words (functions).
+Indeed, <code>nest</code> pushes the value of <code>esi</code> on the return stack (so the return address), then sets the address of the &quot;next block to execute&quot; (=<code>esi</code>) to <code>eax+4</code>, which is the data that follows the <code>nest_</code>.
+To complement it, <code>unnest_</code> pops the return address from the return stack and sets the &quot;next block to execute&quot; (=<code>esi</code>) to it.
+We now have function calls:</p>
+<pre><code>main:
+&amp;nest_ &lt;-- interp
+&amp;foo   &lt;-- interp sees the rest of the block as the &quot;body of the function&quot;
+&amp;bar
+&amp;baz
+&amp;unnest
+
+foo:
+&amp;nest_ &lt;-- interp
+&amp;bla
+&amp;blu
+&amp;blo
+&amp;unnest
+
+etc..
+</code></pre>
+<p>Not every block starts with <code>nest_</code>: instead, all basic operations are implemented in assembly with an &quot;interpreter&quot; that performs it.
+For instance, addition is implemented as such:</p>
+<pre><code>add_:
+... assembly code ... (see in f.nasm)
+next
+
+unnest_:
+... assembly code ...
+next
+
+add:
+&amp;add_ &lt;-- interp (not nest_!!)
+      &lt;-- no need for extra data
+
+unnest:
+&amp;unnest_
+
+main:
+&amp;nest_
+&amp;add  &lt;-- points to block, not function
+...
+&amp;unnest &lt;-- note that unnest is also a pointer to a block, not to assembly
+
+</code></pre>
+<p>Hopefully you start to understand the structure. The implementation of <code>push_</code> may also be interesting for you to understand.
+It takes the next value in the caller block and pushes it on the stack, so you can have constants within the code.</p>
+<pre><code>push:
+&amp;push_
+
+foo:
+&amp;nest
+&amp;push
+123
+&amp;push
+456
+&amp;add
+&amp;unnest
+</code></pre>
+<p>foo pushes 123, then 456, then sums them up together.</p>
+<h2>3. Bootstrapping the repl</h2>
+<p>We can now write code in this weird little language by concatenating addresses in memory. This is exactly what is happening in the .data section.
+I made a few macros to define words (<code>mkw</code> etc) with which i made a REPL called <code>outer</code> here (for outer interpreter, by opposition to the inner interpreters).</p>
+<p>This interpreter is simple:</p>
+<pre><code>loop:
+  read word from stdin (whitespace separated, max 12 chars because of static buffers lmao)
+  if outermode == 0: // &gt; in call mode
+    lookup word in dictionary (the linked list of blocks)
+    call it
+  else: // &gt; in compile mode
+    if word is number:
+      append push to block currently compiled
+      append &lt;word as number&gt; ...
+    else:
+      lookup word in dict
+      if flag 0b1 is set: // &gt; word is immediate, so call it even in compile mode
+        call word
+      else:
+        append pointer to block (cell 5 in diagram above)
+</code></pre>
+<p>Thus writing words will run them, until some word writes the <code>outermode</code> variable to 1, after which every word is appended instead.
+<code>:</code> sets up a new header with the name of the block taken as the next word from stdin, then sets <code>outermode</code> to 1.
+<code>;</code> finishes a word and puts <code>outermode</code> back to 0.</p>
+<p>One can define a function like this <code>: addone 1 + ;</code>, or a function to print the top item of the stack <code>: . tostr puts 10 putc ;</code>.
+Try it!</p>
+<pre><code>$ ./chal
+: addone 1 + ;
+: . tostr puts 10 putc ;
+3 addone addone .
+</code></pre>
+<p>(should print back &quot;5&quot;)</p>
+<p>Notice that some words dont have the same name in the interpreter: the macro <code>mkws</code> lets me rename the word (for <code>add</code> it is renamed to <code>+</code> for instance).</p>
+<h2>4. Writing forth</h2>
+<p>And now the prompt! This file is given as input to the chal binary on the server, so the remote has extra words that you don't have locally.
+You need to leak these words.
+An easy way is to notice that the binary is always mapped to the same address, thus you can simply dump the binary data from the start of the .bss section.
+With a few experiments you can see that new words are all written in the .bss (as well as the stack and return stack, although that doesnt matter here), and thus the words from the prompt will be written there in memory on the remote.</p>
+<pre><code>$ gdb ./chal
+run
+&lt;Ctrl-C&gt;
+# check where data section starts
+vmmap
+[ Legend:  Code | Heap | Stack ]
+Start      End        Offset     Perm Path
+0x8048000 0x804a000 0x000000 r-x ./chal
+0x804a000 0x804b000 0x002000 rwx ./chal
+0x804b000 0x805b000 0x000000 rwx [heap]
+0xf7ff8000 0xf7ffc000 0x000000 r-- [vvar]
+0xf7ffc000 0xf7ffe000 0x000000 r-x [vdso]
+0xfffdd000 0xffffe000 0x000000 rwx [stack]
+
+# .bss is 0x804b000
+</code></pre>
+<p>Then write a little forth word that you can give to the remote to leak all of that.</p>
+<pre><code>ncat -l 8080 -c 'bash runchal.bash' &amp;
+ncat localhost 8080 | tee log
+: . tostr puts 10 putc ;
+: pbyte @ . ;
+: leakall dup pbyte 1 + tail leakall ;
+134524928 leakall
+</code></pre>
+<p>134524928 is decimal for 0x804b000.
+tail is a word that tail-calls the next word, to avoid overflowing the stack with a loop.
+I mean you can also just make a loop in python like so (untested):</p>
+<pre><code>for i in range(0x10000//4):
+  print(f'{i} @ tostr puts 10 putc')
+</code></pre>
+<p>Now you have all the data from the remote! From that, you can reconstruct functions and datastructures from the prompt, as well as the flagchecker.</p>
+<p>Maybe looking at the prompt in text form can make it easier to understand.
+Also maybe not. I was very late when making this chal and the prompt is really ugly and bad haha.</p>
+<p>Another way of leaking the prompt is to simply write shellcode in the .data section and jump to it, since it is executable because of a quirk in how the linker behaves with small section sizes and alignment. Then <code>cat prompt</code> :3
+That's left as an exercise for the reader.</p>
+<h2>5. Reversing the prompt</h2>
+<p>By looking at the strings of the prompt, you can see that a word is called <code>flagchecker</code>.
+Calling <code>flagchecker EPFL{myflag}</code> will tell you if the flag is correct or not.
+The flagchecker is a simple substitution table, it iterates over every character, looksup the coded char in the substitution table <code>b</code>.
+Then it checks in the already substitued string <code>cf</code> if the substituded char matches. If it does, then the character was correct!
+The checker unsets the <code>hihi</code> flag if a char is wrong, and its value is tested at the end to check if it was the correct flag.</p>
+<p>To find the flag, simply invert the <code>b</code> substitution table and run <code>cf</code> through it, and you're done!</p>
+<h1>Conclusion</h1>
+<p>It was a very fun chal to make, I hope it was also fun to play.
+I have made numerous improvements to the forth in the meantime, so many things are better now. Maybe one day I'll publish a more polished version of it :)</p>
+<p>I also didn't explain everything here, I hope you can understand the missing pieces by looking at the source.</p>
+<p>Thanks for reading!</p>
+</body>
+</html>

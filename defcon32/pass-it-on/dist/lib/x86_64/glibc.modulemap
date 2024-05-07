@@ -1,0 +1,52 @@
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 1)
+//===--- glibc.modulemap.gyb ----------------------------------------------===//
+//
+// This source file is part of the Swift.org open source project
+//
+// Copyright (c) 2014 - 2017 Apple Inc. and the Swift project authors
+// Licensed under Apache License v2.0 with Runtime Library Exception
+//
+// See https://swift.org/LICENSE.txt for license information
+// See https://swift.org/CONTRIBUTORS.txt for the list of Swift project authors
+//
+//===----------------------------------------------------------------------===//
+
+/// This is a semi-complete modulemap that maps glibc's headers in a roughly
+/// similar way to the Darwin SDK modulemap. We do not take care to list every
+/// single header which may be included by a particular submodule, so there can
+/// still be issues if imported into the same context as one in which someone
+/// included those headers directly.
+///
+/// It's not named just Glibc so that it doesn't conflict in the event of a
+/// future official glibc modulemap.
+module SwiftGlibc [system] {
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 23)
+      link "m"
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 26)
+  link "pthread"
+  // FIXME: util contains rarely used functions and not usually needed. Unfortunately
+  // link directive doesn't work in the submodule yet.
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 30)
+  link "util"
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 33)
+
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 35)
+  link "dl"
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 37)
+
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 43)
+
+  header "SwiftGlibc.h"
+
+  // <assert.h>'s use of NDEBUG requires textual inclusion. 
+  textual header "assert.h"
+
+  export *
+}
+
+// ###sourceLocation(file: "/home/build-user/swift/stdlib/public/Platform/glibc.modulemap.gyb", line: 53)
+module CUUID [system] {
+  header "uuid/uuid.h"
+  link "uuid"
+  export *
+}

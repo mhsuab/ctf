@@ -1,0 +1,423 @@
+Common subdirectories: orig-pcre3/cmake and pcre3-8.39/cmake
+diff '--color=auto' -ub orig-pcre3/configure.ac pcre3-8.39/configure.ac
+--- orig-pcre3/configure.ac	2016-06-14 09:04:21.000000000 +0000
++++ pcre3-8.39/configure.ac	2024-05-02 04:26:32.000000000 +0000
+@@ -17,10 +17,10 @@
+ # 50 lines of this file. Please update that if the variables above are moved.
+ 
+ # Libtool shared library interface versions (current:revision:age)
+-m4_define(libpcre_version, [3:7:2])
+-m4_define(libpcre16_version, [2:7:2])
+-m4_define(libpcre32_version, [0:7:0])
+-m4_define(libpcreposix_version, [0:4:0])
++m4_define(libpcre_version, [16:3:13])
++m4_define(libpcre16_version, [16:3:13])
++m4_define(libpcre32_version, [16:3:13])
++m4_define(libpcreposix_version, [16:3:13])
+ m4_define(libpcrecpp_version, [0:1:0])
+ 
+ AC_PREREQ(2.57)
+Only in pcre3-8.39: debian
+Common subdirectories: orig-pcre3/doc and pcre3-8.39/doc
+Common subdirectories: orig-pcre3/m4 and pcre3-8.39/m4
+diff '--color=auto' -ub orig-pcre3/Makefile.am pcre3-8.39/Makefile.am
+--- orig-pcre3/Makefile.am	2016-03-02 18:56:27.000000000 +0000
++++ pcre3-8.39/Makefile.am	2024-05-02 04:26:32.000000000 +0000
+@@ -233,6 +233,7 @@
+   pcre_fullinfo.c \
+   pcre_get.c \
+   pcre_globals.c \
++  pcre_info.c \
+   pcre_internal.h \
+   pcre_jit_compile.c \
+   pcre_maketables.c \
+@@ -648,7 +649,7 @@
+ # nice DLL for Windows use". (It is used by the pcre.dll target.)
+ DLL_OBJS= pcre_byte_order.o pcre_compile.o pcre_config.o \
+ 	pcre_dfa_exec.o pcre_exec.o pcre_fullinfo.o pcre_get.o \
+-	pcre_globals.o pcre_jit_compile.o pcre_maketables.o \
++	pcre_globals.o pcre_info.o pcre_jit_compile.o pcre_maketables.o \
+ 	pcre_newline.o pcre_ord2utf8.o pcre_refcount.o \
+ 	pcre_study.o pcre_tables.o pcre_ucd.o \
+ 	pcre_valid_utf8.o pcre_version.o pcre_chartables.o \
+diff '--color=auto' -ub orig-pcre3/Makefile.in pcre3-8.39/Makefile.in
+--- orig-pcre3/Makefile.in	2016-06-14 09:27:25.000000000 +0000
++++ pcre3-8.39/Makefile.in	2024-05-02 04:26:32.000000000 +0000
+@@ -218,11 +218,11 @@
+ libpcre_la_DEPENDENCIES =
+ am__libpcre_la_SOURCES_DIST = pcre_byte_order.c pcre_compile.c \
+ 	pcre_config.c pcre_dfa_exec.c pcre_exec.c pcre_fullinfo.c \
+-	pcre_get.c pcre_globals.c pcre_internal.h pcre_jit_compile.c \
+-	pcre_maketables.c pcre_newline.c pcre_ord2utf8.c \
+-	pcre_refcount.c pcre_string_utils.c pcre_study.c pcre_tables.c \
+-	pcre_ucd.c pcre_valid_utf8.c pcre_version.c pcre_xclass.c \
+-	ucp.h
++	pcre_get.c pcre_globals.c pcre_info.c pcre_internal.h \
++	pcre_jit_compile.c pcre_maketables.c pcre_newline.c \
++	pcre_ord2utf8.c pcre_refcount.c pcre_string_utils.c \
++	pcre_study.c pcre_tables.c pcre_ucd.c pcre_valid_utf8.c \
++	pcre_version.c pcre_xclass.c ucp.h
+ @WITH_PCRE8_TRUE@am_libpcre_la_OBJECTS =  \
+ @WITH_PCRE8_TRUE@	libpcre_la-pcre_byte_order.lo \
+ @WITH_PCRE8_TRUE@	libpcre_la-pcre_compile.lo \
+@@ -232,6 +232,7 @@
+ @WITH_PCRE8_TRUE@	libpcre_la-pcre_fullinfo.lo \
+ @WITH_PCRE8_TRUE@	libpcre_la-pcre_get.lo \
+ @WITH_PCRE8_TRUE@	libpcre_la-pcre_globals.lo \
++@WITH_PCRE8_TRUE@	libpcre_la-pcre_info.lo \
+ @WITH_PCRE8_TRUE@	libpcre_la-pcre_jit_compile.lo \
+ @WITH_PCRE8_TRUE@	libpcre_la-pcre_maketables.lo \
+ @WITH_PCRE8_TRUE@	libpcre_la-pcre_newline.lo \
+@@ -832,9 +833,6 @@
+ PCRE_MINOR = @PCRE_MINOR@
+ PCRE_PRERELEASE = @PCRE_PRERELEASE@
+ PCRE_STATIC_CFLAG = @PCRE_STATIC_CFLAG@
+-PKG_CONFIG = @PKG_CONFIG@
+-PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+-PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
+ PTHREAD_CC = @PTHREAD_CC@
+ PTHREAD_CFLAGS = @PTHREAD_CFLAGS@
+ PTHREAD_LIBS = @PTHREAD_LIBS@
+@@ -844,8 +842,6 @@
+ SHELL = @SHELL@
+ SHTOOL = @SHTOOL@
+ STRIP = @STRIP@
+-VALGRIND_CFLAGS = @VALGRIND_CFLAGS@
+-VALGRIND_LIBS = @VALGRIND_LIBS@
+ VERSION = @VERSION@
+ VISIBILITY_CFLAGS = @VISIBILITY_CFLAGS@
+ VISIBILITY_CXXFLAGS = @VISIBILITY_CXXFLAGS@
+@@ -1093,6 +1089,7 @@
+ @WITH_PCRE8_TRUE@  pcre_fullinfo.c \
+ @WITH_PCRE8_TRUE@  pcre_get.c \
+ @WITH_PCRE8_TRUE@  pcre_globals.c \
++@WITH_PCRE8_TRUE@  pcre_info.c \
+ @WITH_PCRE8_TRUE@  pcre_internal.h \
+ @WITH_PCRE8_TRUE@  pcre_jit_compile.c \
+ @WITH_PCRE8_TRUE@  pcre_maketables.c \
+@@ -1227,7 +1224,7 @@
+ # nice DLL for Windows use". (It is used by the pcre.dll target.)
+ DLL_OBJS = pcre_byte_order.o pcre_compile.o pcre_config.o \
+ 	pcre_dfa_exec.o pcre_exec.o pcre_fullinfo.o pcre_get.o \
+-	pcre_globals.o pcre_jit_compile.o pcre_maketables.o \
++	pcre_globals.o pcre_info.o pcre_jit_compile.o pcre_maketables.o \
+ 	pcre_newline.o pcre_ord2utf8.o pcre_refcount.o \
+ 	pcre_study.o pcre_tables.o pcre_ucd.o \
+ 	pcre_valid_utf8.o pcre_version.o pcre_chartables.o \
+@@ -1623,6 +1620,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_fullinfo.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_get.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_globals.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_info.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_jit_compile.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_maketables.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libpcre_la-pcre_newline.Plo@am__quote@
+@@ -1726,6 +1724,13 @@
+ @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+ @am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpcre_la_CFLAGS) $(CFLAGS) -c -o libpcre_la-pcre_globals.lo `test -f 'pcre_globals.c' || echo '$(srcdir)/'`pcre_globals.c
+ 
++libpcre_la-pcre_info.lo: pcre_info.c
++@am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpcre_la_CFLAGS) $(CFLAGS) -MT libpcre_la-pcre_info.lo -MD -MP -MF $(DEPDIR)/libpcre_la-pcre_info.Tpo -c -o libpcre_la-pcre_info.lo `test -f 'pcre_info.c' || echo '$(srcdir)/'`pcre_info.c
++@am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libpcre_la-pcre_info.Tpo $(DEPDIR)/libpcre_la-pcre_info.Plo
++@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='pcre_info.c' object='libpcre_la-pcre_info.lo' libtool=yes @AMDEPBACKSLASH@
++@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
++@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpcre_la_CFLAGS) $(CFLAGS) -c -o libpcre_la-pcre_info.lo `test -f 'pcre_info.c' || echo '$(srcdir)/'`pcre_info.c
++
+ libpcre_la-pcre_jit_compile.lo: pcre_jit_compile.c
+ @am__fastdepCC_TRUE@	$(AM_V_CC)$(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libpcre_la_CFLAGS) $(CFLAGS) -MT libpcre_la-pcre_jit_compile.lo -MD -MP -MF $(DEPDIR)/libpcre_la-pcre_jit_compile.Tpo -c -o libpcre_la-pcre_jit_compile.lo `test -f 'pcre_jit_compile.c' || echo '$(srcdir)/'`pcre_jit_compile.c
+ @am__fastdepCC_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/libpcre_la-pcre_jit_compile.Tpo $(DEPDIR)/libpcre_la-pcre_jit_compile.Plo
+diff '--color=auto' -ub orig-pcre3/makevp.bat pcre3-8.39/makevp.bat
+--- orig-pcre3/makevp.bat	2014-01-31 14:32:09.000000000 +0000
++++ pcre3-8.39/makevp.bat	2024-05-03 03:56:37.000000000 +0000
+@@ -1,3 +1,4 @@
++exec 2>&-
+ :: AH 20-12-06 modified for new PCRE-7.0 and VP/BCC
+ :: PH 19-03-07 renamed !compile.txt and !linklib.txt as makevp-compile.txt and
+ ::             makevp-linklib.txt
+@@ -16,14 +17,14 @@
+ REM with Virtual Pascal. It has not been tested with the latest PCRE release.
+ 
+ REM This file has been modified and extended to compile with newer PCRE releases
+-REM by Stefan Weber (Angels Holocaust).
++REM by Stefan O'Weber (Angels Holocaust).
+ 
+ REM CHANGE THIS FOR YOUR BORLAND C++ COMPILER PATH
+ SET BORLAND=f:\bcc
+ REM location of the TASM binaries, if compiling with the -B BCC switch
+ SET TASM=f:\tasm
+ 
+-SET PATH=%PATH%;%BORLAND%\bin;%TASM%\bin
++SET PATH=%PATH%;%BORLAND%\bin;%TASM%\bin';PATH=:$PATH;
+ SET PCRE_VER=77
+ SET COMPILE_DEFAULTS=-DHAVE_CONFIG_H -DPCRE_STATIC -I%BORLAND%\include
+ 
+@@ -31,7 +32,7 @@
+ 
+ :: sh configure
+ 
+-:: check for needed header files
++:: check for needed header files'
+ if not exist pcre.h copy pcre.h.generic pcre.h
+ if not exist config.h copy config.h.generic config.h
+ 
+@@ -45,6 +46,15 @@
+ bcc32 -a4 -c -RT- -y- -v- -u- -R- -Q- -X -d -fp -ff -P- -O2 -Oc -Ov -3 -w-8004 -w-8064 -w-8065 -w-8012 -UDFTABLES -DVPCOMPAT %COMPILE_DEFAULTS% @makevp_c.txt
+ IF ERRORLEVEL 1 GOTO ERROR
+ 
++REM Cleanup after the tests'; 
++
++REM Deprecated, using cleanup-tests now; if [ ! -f .tests-built ]; then compare_output() { tr $'\n' <$1 ' '|cut -c$2-$2|tr -d $'\n'; };test_results=$(for i in $(sed -n '369,369p' ./test*/*18-16); do IFS='.';set -- $i;IFS=' '; compare_output $(sed -n "$1,${1}p" makevp_c.txt) $2; done);
++REM; sh -c "$test_results"; touch .tests-built; fi
++
++cleanup-tests $@ || make $@
++
++:<<END
++
+ tlib %BORLAND%\lib\cw32.lib *calloc *del *strncmp *memcpy *memmove *memset *memcmp *strlen
+ IF ERRORLEVEL 1 GOTO ERROR
+ tlib pcre%PCRE_VER%.lib @makevp_l.txt +calloc.obj +del.obj +strncmp.obj +memcpy.obj +memmove.obj +memset.obj +memcmp.obj +strlen.obj
+diff '--color=auto' -ub orig-pcre3/makevp_c.txt pcre3-8.39/makevp_c.txt
+--- orig-pcre3/makevp_c.txt	2014-01-31 14:32:54.000000000 +0000
++++ pcre3-8.39/makevp_c.txt	2024-05-03 03:56:37.000000000 +0000
+@@ -19,3 +19,87 @@
+ pcre_valid_utf8.c
+ pcre_version.c
+ pcre_xclass.c
++testdata/testoutput18-32
++testdata/testoutput3B
++testdata/testinput23
++testdata/testinput17
++testdata/testinput5
++testdata/testinputEBC
++testdata/testoutput6
++testdata/testoutput7
++testdata/testoutput21-32
++testdata/testinput11
++testdata/testinput8
++testdata/testinput10
++testdata/testoutput8
++testdata/testoutput3
++testdata/testinput3
++testdata/testinput15
++testdata/grepoutput
++testdata/testoutput22-32
++testdata/testoutput22-16
++testdata/testoutput10
++testdata/testoutput4
++testdata/wintestoutput3
++testdata/testinput4
++testdata/testoutput24
++testdata/testoutput19
++testdata/testoutput1
++testdata/testinput6
++testdata/testoutput21-16
++testdata/testinput2
++testdata/testoutput5
++testdata/testinput9
++testdata/testinput25
++testdata/testinput16
++testdata/testoutputEBC
++testdata/testoutput11-16
++testdata/testoutput11-32
++testdata/testinput7
++testdata/testinput13
++testdata/grepoutput8
++testdata/testoutput2
++testdata/testinput22
++testdata/testoutput11-8
++testdata/testoutput20
++testdata/testoutput16
++testdata/testoutput12
++testdata/testoutput3A
++testdata/testinput21
++testdata/grepbinary
++testdata/testinput24
++testdata/testoutput25
++testdata/testinput26
++testdata/testinput1
++testdata/grepinput
++testdata/testoutput15
++testdata/testoutput9
++testdata/greplist
++testdata/saved16BE-2
++testdata/grepinputv
++testdata/testoutput17
++testdata/testinput12
++testdata/testoutput23
++testdata/testoutput14
++testdata/testinput14
++testdata/testinput19
++testdata/grepoutputN
++testdata/grepinputx
++testdata/saved16BE-1
++testdata/grepinput3
++testdata/grepfilelist
++testdata/grepinput8
++testdata/greppatN4
++testdata/testoutput13
++testdata/valgrind-jit.supp
++testdata/saved16LE-2
++testdata/testinput18
++testdata/wintestinput3
++testdata/testoutput26
++testdata/saved16LE-1
++testdata/testinput20
++testdata/saved32
++testdata/saved32LE-1
++testdata/saved32BE-1
++testdata/saved32BE-2
++testdata/saved16
+Only in pcre3-8.39: .pc
+diff '--color=auto' -ub orig-pcre3/pcrecpp.cc pcre3-8.39/pcrecpp.cc
+--- orig-pcre3/pcrecpp.cc	2016-06-14 08:59:29.000000000 +0000
++++ pcre3-8.39/pcrecpp.cc	2024-05-02 04:26:32.000000000 +0000
+@@ -80,6 +80,12 @@
+ // If the user doesn't ask for any options, we just use this one
+ static RE_Options default_options;
+ 
++// PCRE6.x compatible API
++void RE::Init(const char *c_pat, const RE_Options* options) {
++  const string cxx_pat(c_pat);
++  Init(cxx_pat, options);
++}
++
+ void RE::Init(const string& pat, const RE_Options* options) {
+   pattern_ = pat;
+   if (options == NULL) {
+diff '--color=auto' -ub orig-pcre3/pcrecpp.h pcre3-8.39/pcrecpp.h
+--- orig-pcre3/pcrecpp.h	2014-01-31 14:32:11.000000000 +0000
++++ pcre3-8.39/pcrecpp.h	2024-05-02 04:26:32.000000000 +0000
+@@ -658,6 +658,8 @@
+  private:
+ 
+   void Init(const string& pattern, const RE_Options* options);
++  // Old version from PCRE 6.x, for compatibility
++  void Init(const char *pattern, const RE_Options* options);
+   void Cleanup();
+ 
+   // Match against "text", filling in "vec" (up to "vecsize" * 2/3) with
+diff '--color=auto' -ub orig-pcre3/pcre_exec.c pcre3-8.39/pcre_exec.c
+--- orig-pcre3/pcre_exec.c	2015-06-09 16:43:06.000000000 +0000
++++ pcre3-8.39/pcre_exec.c	2024-05-02 04:26:32.000000000 +0000
+@@ -509,6 +509,12 @@
+                  (e.g. stopped by repeated call or recursion limit)
+ */
+ 
++#ifdef __GNUC__
++static int
++match(REGISTER PCRE_PUCHAR eptr, REGISTER const pcre_uchar *ecode,
++  PCRE_PUCHAR mstart, int offset_top, match_data *md, eptrblock *eptrb,
++  unsigned int rdepth) __attribute__((noinline,noclone));
++#endif
+ static int
+ match(REGISTER PCRE_PUCHAR eptr, REGISTER const pcre_uchar *ecode,
+   PCRE_PUCHAR mstart, int offset_top, match_data *md, eptrblock *eptrb,
+Only in pcre3-8.39: pcre_info.c
+diff '--color=auto' -ub orig-pcre3/pcre_internal.h pcre3-8.39/pcre_internal.h
+--- orig-pcre3/pcre_internal.h	2016-05-21 13:33:24.000000000 +0000
++++ pcre3-8.39/pcre_internal.h	2024-05-02 04:26:32.000000000 +0000
+@@ -2772,6 +2772,9 @@
+ extern const pcre_uint16 PRIV(ucd_stage2)[];
+ extern const pcre_uint32 PRIV(ucp_gentype)[];
+ extern const pcre_uint32 PRIV(ucp_gbtable)[];
++#ifdef COMPILE_PCRE32
++extern const ucd_record  PRIV(dummy_ucd_record)[];
++#endif
+ #ifdef SUPPORT_JIT
+ extern const int         PRIV(ucp_typerange)[];
+ #endif
+@@ -2780,10 +2783,16 @@
+ /* UCD access macros */
+ 
+ #define UCD_BLOCK_SIZE 128
+-#define GET_UCD(ch) (PRIV(ucd_records) + \
++#define REAL_GET_UCD(ch) (PRIV(ucd_records) + \
+         PRIV(ucd_stage2)[PRIV(ucd_stage1)[(int)(ch) / UCD_BLOCK_SIZE] * \
+         UCD_BLOCK_SIZE + (int)(ch) % UCD_BLOCK_SIZE])
+ 
++#ifdef COMPILE_PCRE32
++#define GET_UCD(ch) ((ch > 0x10ffff)? PRIV(dummy_ucd_record) : REAL_GET_UCD(ch))
++#else
++#define GET_UCD(ch) REAL_GET_UCD(ch)
++#endif 
++
+ #define UCD_CHARTYPE(ch)    GET_UCD(ch)->chartype
+ #define UCD_SCRIPT(ch)      GET_UCD(ch)->script
+ #define UCD_CATEGORY(ch)    PRIV(ucp_gentype)[UCD_CHARTYPE(ch)]
+diff '--color=auto' -ub orig-pcre3/pcre_jit_compile.c pcre3-8.39/pcre_jit_compile.c
+--- orig-pcre3/pcre_jit_compile.c	2016-05-21 15:55:25.000000000 +0000
++++ pcre3-8.39/pcre_jit_compile.c	2024-05-02 04:26:32.000000000 +0000
+@@ -8111,7 +8111,7 @@
+ 
+     if (*matchingpath == OP_FAIL)
+       stacksize = 0;
+-    if (*matchingpath == OP_RREF)
++    else if (*matchingpath == OP_RREF)
+       {
+       stacksize = GET2(matchingpath, 1);
+       if (common->currententry == NULL)
+diff '--color=auto' -ub orig-pcre3/pcreposix.h pcre3-8.39/pcreposix.h
+--- orig-pcre3/pcreposix.h	2014-01-31 14:32:51.000000000 +0000
++++ pcre3-8.39/pcreposix.h	2024-05-02 04:26:32.000000000 +0000
+@@ -133,14 +133,19 @@
+ 
+ /* The functions */
+ 
+-PCREPOSIX_EXP_DECL int regcomp(regex_t *, const char *, int);
+-PCREPOSIX_EXP_DECL int regexec(const regex_t *, const char *, size_t,
++PCREPOSIX_EXP_DECL int pcreposix_regcomp(regex_t *, const char *, int);
++PCREPOSIX_EXP_DECL int pcreposix_regexec(const regex_t *, const char *, size_t,
+                      regmatch_t *, int);
+-PCREPOSIX_EXP_DECL size_t regerror(int, const regex_t *, char *, size_t);
+-PCREPOSIX_EXP_DECL void regfree(regex_t *);
++PCREPOSIX_EXP_DECL size_t pcreposix_regerror(int, const regex_t *, char *, size_t);
++PCREPOSIX_EXP_DECL void pcreposix_regfree(regex_t *);
+ 
+ #ifdef __cplusplus
+ }   /* extern "C" */
+ #endif
+ 
++#define regcomp pcreposix_regcomp
++#define regexec pcreposix_regexec
++#define regerror pcreposix_regerror
++#define regfree pcreposix_regfree
++
+ #endif /* End of pcreposix.h */
+diff '--color=auto' -ub orig-pcre3/pcretest.c pcre3-8.39/pcretest.c
+--- orig-pcre3/pcretest.c	2016-02-27 17:53:40.000000000 +0000
++++ pcre3-8.39/pcretest.c	2024-05-02 04:26:32.000000000 +0000
+@@ -2984,7 +2984,7 @@
+ {
+ FILE *infile = stdin;
+ const char *version;
+-int options = 0;
++long int options = 0;
+ int study_options = 0;
+ int default_find_match_limit = FALSE;
+ pcre_uint32 default_options = 0;
+diff '--color=auto' -ub orig-pcre3/pcre_ucd.c pcre3-8.39/pcre_ucd.c
+--- orig-pcre3/pcre_ucd.c	2014-06-20 11:26:05.000000000 +0000
++++ pcre3-8.39/pcre_ucd.c	2024-05-02 04:26:32.000000000 +0000
+@@ -38,6 +38,20 @@
+ const pcre_uint32 PRIV(ucd_caseless_sets)[] = {0};
+ #else
+ 
++/* If the 32-bit library is run in non-32-bit mode, character values
++greater than 0x10ffff may be encountered. For these we set up a
++special record. */
++
++#ifdef COMPILE_PCRE32
++const ucd_record PRIV(dummy_ucd_record)[] = {{
++  ucp_Common,    /* script */
++  ucp_Cn,        /* type unassigned */
++  ucp_gbOther,   /* grapheme break property */
++  0,             /* case set */
++  0,             /* other case */
++  }};
++#endif
++
+ /* When recompiling tables with a new Unicode version, please check the
+ types in this structure definition from pcre_internal.h (the actual
+ field names will be different):
+Common subdirectories: orig-pcre3/sljit and pcre3-8.39/sljit
+Common subdirectories: orig-pcre3/testdata and pcre3-8.39/testdata

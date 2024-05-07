@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Tuple
 
 challenge_path = './challenge/chal'
-prompt_mem_dump = './chal.bss'
+prompt_mem_dump = './chal.bss.patch'
 output_prog = 'chal.forth'
 
 @dataclass
@@ -73,6 +73,6 @@ for f in funcs:
             if sub[1] < 0x100:
                 f.funcs[idx] = (sub[0], f'{f.funcs[idx][1]}\t({chr(sub[1]).encode()})')
 
-with open(output_prog, 'w') as fp:
-    fp.write('\n'.join(str(fn) for fn in funcs))
+# with open(output_prog, 'w') as fp:
+#     fp.write('\n'.join(str(fn) for fn in funcs))
 
