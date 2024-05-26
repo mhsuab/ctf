@@ -16,3 +16,6 @@
 [submodule "utils/biodiff"]
 	path = utils/biodiff
 	url = git@github.com:8051Enthusiast/biodiff.git
+[submodule "utils/pyda"]
+	path = utils/pyda
+	url = git@github.com:ndrewh/pyda.git
